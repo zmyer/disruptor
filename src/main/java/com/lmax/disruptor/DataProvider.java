@@ -15,7 +15,7 @@
  */
 package com.lmax.disruptor;
 
-public interface DataProvider<T>
-{
+// TODO: 2018/7/13 by zmyer
+public interface DataProvider<T> {
     T get(long sequence);
 }

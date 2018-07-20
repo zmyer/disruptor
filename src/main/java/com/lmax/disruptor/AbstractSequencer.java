@@ -15,20 +15,20 @@
  */
 package com.lmax.disruptor;
 
+import com.lmax.disruptor.util.Util;
+
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-
-import com.lmax.disruptor.util.Util;
 
 /**
  * Base class for the various sequencer types (single/multi).  Provides
  * common functionality like the management of gating sequences (add/remove) and
  * ownership of the current cursor.
  */
-public abstract class AbstractSequencer implements Sequencer
-{
+// TODO: 2018/7/13 by zmyer
+public abstract class AbstractSequencer implements Sequencer {
     private static final AtomicReferenceFieldUpdater<AbstractSequencer, Sequence[]> SEQUENCE_UPDATER =
-        AtomicReferenceFieldUpdater.newUpdater(AbstractSequencer.class, Sequence[].class, "gatingSequences");
+            AtomicReferenceFieldUpdater.newUpdater(AbstractSequencer.class, Sequence[].class, "gatingSequences");
 
     protected final int bufferSize;
     protected final WaitStrategy waitStrategy;
@@ -41,14 +41,12 @@ public abstract class AbstractSequencer implements Sequencer
      * @param bufferSize   The total number of entries, must be a positive power of 2.
      * @param waitStrategy The wait strategy used by this sequencer
      */
-    public AbstractSequencer(int bufferSize, WaitStrategy waitStrategy)
-    {
-        if (bufferSize < 1)
-        {
+    // TODO: 2018/7/13 by zmyer
+    public AbstractSequencer(int bufferSize, WaitStrategy waitStrategy) {
+        if (bufferSize < 1) {
             throw new IllegalArgumentException("bufferSize must not be less than 1");
         }
-        if (Integer.bitCount(bufferSize) != 1)
-        {
+        if (Integer.bitCount(bufferSize) != 1) {
             throw new IllegalArgumentException("bufferSize must be a power of 2");
         }
 
@@ -60,8 +58,7 @@ public abstract class AbstractSequencer implements Sequencer
      * @see Sequencer#getCursor()
      */
     @Override
-    public final long getCursor()
-    {
+    public final long getCursor() {
         return cursor.get();
     }
 
@@ -69,44 +66,43 @@ public abstract class AbstractSequencer implements Sequencer
      * @see Sequencer#getBufferSize()
      */
     @Override
-    public final int getBufferSize()
-    {
+    public final int getBufferSize() {
         return bufferSize;
     }
 
     /**
      * @see Sequencer#addGatingSequences(Sequence...)
      */
+    // TODO: 2018/7/13 by zmyer
     @Override
-    public final void addGatingSequences(Sequence... gatingSequences)
-    {
+    public final void addGatingSequences(Sequence... gatingSequences) {
         SequenceGroups.addSequences(this, SEQUENCE_UPDATER, this, gatingSequences);
     }
 
     /**
      * @see Sequencer#removeGatingSequence(Sequence)
      */
+    // TODO: 2018/7/13 by zmyer
     @Override
-    public boolean removeGatingSequence(Sequence sequence)
-    {
+    public boolean removeGatingSequence(Sequence sequence) {
         return SequenceGroups.removeSequence(this, SEQUENCE_UPDATER, sequence);
     }
 
     /**
      * @see Sequencer#getMinimumSequence()
      */
+    // TODO: 2018/7/13 by zmyer
     @Override
-    public long getMinimumSequence()
-    {
+    public long getMinimumSequence() {
         return Util.getMinimumSequence(gatingSequences, cursor.get());
     }
 
     /**
      * @see Sequencer#newBarrier(Sequence...)
      */
+    // TODO: 2018/7/13 by zmyer
     @Override
-    public SequenceBarrier newBarrier(Sequence... sequencesToTrack)
-    {
+    public SequenceBarrier newBarrier(Sequence... sequencesToTrack) {
         return new ProcessingSequenceBarrier(this, waitStrategy, cursor, sequencesToTrack);
     }
 
@@ -118,19 +114,18 @@ public abstract class AbstractSequencer implements Sequencer
      * @param gatingSequences Sequence to be gated on.
      * @return A poller that will gate on this ring buffer and the supplied sequences.
      */
+    // TODO: 2018/7/13 by zmyer
     @Override
-    public <T> EventPoller<T> newPoller(DataProvider<T> dataProvider, Sequence... gatingSequences)
-    {
+    public <T> EventPoller<T> newPoller(DataProvider<T> dataProvider, Sequence... gatingSequences) {
         return EventPoller.newInstance(dataProvider, this, new Sequence(), cursor, gatingSequences);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "AbstractSequencer{" +
-            "waitStrategy=" + waitStrategy +
-            ", cursor=" + cursor +
-            ", gatingSequences=" + Arrays.toString(gatingSequences) +
-            '}';
+                "waitStrategy=" + waitStrategy +
+                ", cursor=" + cursor +
+                ", gatingSequences=" + Arrays.toString(gatingSequences) +
+                '}';
     }
 }

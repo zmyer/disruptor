@@ -1,6 +1,6 @@
 package com.lmax.disruptor;
 
-public interface TimeoutHandler
-{
+// TODO: 2018/7/19 by zmyer
+public interface TimeoutHandler {
     void onTimeout(long sequence) throws Exception;
 }

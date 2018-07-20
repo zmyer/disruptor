@@ -21,8 +21,8 @@ package com.lmax.disruptor;
  * @param <T> event implementation storing the data for sharing during exchange or parallel coordination of an event.
  * @see EventTranslator
  */
-public interface EventTranslatorOneArg<T, A>
-{
+// TODO: 2018/7/13 by zmyer
+public interface EventTranslatorOneArg<T, A> {
     /**
      * Translate a data representation into fields set in given event
      *

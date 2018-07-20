@@ -15,23 +15,22 @@
  */
 package com.lmax.disruptor;
 
+import com.lmax.disruptor.util.Util;
 import sun.misc.Unsafe;
 
-import com.lmax.disruptor.util.Util;
 
-
-class LhsPadding
-{
+// TODO: 2018/7/13 by zmyer
+class LhsPadding {
     protected long p1, p2, p3, p4, p5, p6, p7;
 }
 
-class Value extends LhsPadding
-{
+// TODO: 2018/7/13 by zmyer
+class Value extends LhsPadding {
     protected volatile long value;
 }
 
-class RhsPadding extends Value
-{
+// TODO: 2018/7/13 by zmyer
+class RhsPadding extends Value {
     protected long p9, p10, p11, p12, p13, p14, p15;
 }
 
@@ -43,21 +42,17 @@ class RhsPadding extends Value
  * <p>Also attempts to be more efficient with regards to false
  * sharing by adding padding around the volatile field.
  */
-public class Sequence extends RhsPadding
-{
+// TODO: 2018/7/13 by zmyer
+public class Sequence extends RhsPadding {
     static final long INITIAL_VALUE = -1L;
     private static final Unsafe UNSAFE;
     private static final long VALUE_OFFSET;
 
-    static
-    {
+    static {
         UNSAFE = Util.getUnsafe();
-        try
-        {
+        try {
             VALUE_OFFSET = UNSAFE.objectFieldOffset(Value.class.getDeclaredField("value"));
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -65,8 +60,7 @@ public class Sequence extends RhsPadding
     /**
      * Create a sequence initialised to -1.
      */
-    public Sequence()
-    {
+    public Sequence() {
         this(INITIAL_VALUE);
     }
 
@@ -75,8 +69,7 @@ public class Sequence extends RhsPadding
      *
      * @param initialValue The initial value for this sequence.
      */
-    public Sequence(final long initialValue)
-    {
+    public Sequence(final long initialValue) {
         UNSAFE.putOrderedLong(this, VALUE_OFFSET, initialValue);
     }
 
@@ -85,8 +78,7 @@ public class Sequence extends RhsPadding
      *
      * @return The current value of the sequence.
      */
-    public long get()
-    {
+    public long get() {
         return value;
     }
 
@@ -97,8 +89,7 @@ public class Sequence extends RhsPadding
      *
      * @param value The new value for the sequence.
      */
-    public void set(final long value)
-    {
+    public void set(final long value) {
         UNSAFE.putOrderedLong(this, VALUE_OFFSET, value);
     }
 
@@ -110,8 +101,7 @@ public class Sequence extends RhsPadding
      *
      * @param value The new value for the sequence.
      */
-    public void setVolatile(final long value)
-    {
+    public void setVolatile(final long value) {
         UNSAFE.putLongVolatile(this, VALUE_OFFSET, value);
     }
 
@@ -122,8 +112,7 @@ public class Sequence extends RhsPadding
      * @param newValue The value to update to.
      * @return true if the operation succeeds, false otherwise.
      */
-    public boolean compareAndSet(final long expectedValue, final long newValue)
-    {
+    public boolean compareAndSet(final long expectedValue, final long newValue) {
         return UNSAFE.compareAndSwapLong(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
@@ -132,8 +121,7 @@ public class Sequence extends RhsPadding
      *
      * @return The value after the increment
      */
-    public long incrementAndGet()
-    {
+    public long incrementAndGet() {
         return addAndGet(1L);
     }
 
@@ -143,13 +131,11 @@ public class Sequence extends RhsPadding
      * @param increment The value to add to the sequence.
      * @return The value after the increment.
      */
-    public long addAndGet(final long increment)
-    {
+    public long addAndGet(final long increment) {
         long currentValue;
         long newValue;
 
-        do
-        {
+        do {
             currentValue = get();
             newValue = currentValue + increment;
         }
@@ -159,8 +145,7 @@ public class Sequence extends RhsPadding
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return Long.toString(get());
     }
 }

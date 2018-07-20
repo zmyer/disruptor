@@ -15,7 +15,7 @@
  */
 package com.lmax.disruptor;
 
-public interface EventReleaseAware
-{
+// TODO: 2018/7/19 by zmyer
+public interface EventReleaseAware {
     void setEventReleaser(EventReleaser eventReleaser);
 }

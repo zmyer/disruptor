@@ -1,7 +1,7 @@
 package com.lmax.disruptor;
 
-public interface Sequenced
-{
+// TODO: 2018/7/13 by zmyer
+public interface Sequenced {
     /**
      * The capacity of the data structure to hold entries.
      *
